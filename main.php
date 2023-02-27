@@ -2,60 +2,46 @@
 class Garden
 {
   public $tree = [];
-  public $count_fruit = [];
-  function __construct($tree = [], $count_fruit = [])
+  function __construct($tree = [])
   {
     $this->tree = $tree;
-    $this->count_fruit = $count_fruit;
   }
   public function getTree(){
     return $this->tree;
   }
-  public function getFruit(){
-    return $this->count_fruit;
-  }
-  public function countFruit($tree_name, $count){
-    if (!isset($this->count_fruit[$tree_name])) {
-      $this->count_fruit[$tree_name] = 0;
-    }
-    $this->count_fruit[$tree_name] = $count;
-
-  }
-  public function newTree($tree_name, $count){
+  public function newTree($tree_name, $tree_id, $count, $weight){
+    #создаем вид дерева если его нет
     if (!isset($this->tree[$tree_name])) {
-      $this->tree[$tree_name] = 0;
-      $this->count_fruit[$tree_name] = 0;
+      $this->tree[$tree_name] = [];
     }
-    $this->tree[$tree_name] += $count;
+    $inf = [];
+    #создаем уникальное дерево
+    for ($ii=0; $ii < $tree_id; $ii++) {
+      #создаем уникальное яблоко которое имеет свои параметры
+      for ($i=0; $i < rand($count[0], $count[1]); $i++) {
+        $inf[$i] = rand($weight[0], $weight[1]);
+      }
+      $this->tree[$tree_name][$ii] = $inf;
+    }
   }
 }
-
 
 $garden = new Garden();
-//1. Добавляем деревья в сад. Создаем 10 яблонь
-$garden->newTree("Яблоня", 10);
-//и 15 груши
-$garden->newTree("Груша", 15);
-// Задаем им параметры. Количество яболок на дереве и вес в гр
-$garden->countFruit("Яблоня",  array(rand(40, 50), rand(150, 180)));
-$garden->countFruit("Груша", array(rand(0, 20), rand(130, 170)));
-echo "До сбора:\n";
-print_r($garden->getTree());
-print_r($garden->getFruit());
-
-echo "\n------------------\nНачало сбора\n";
-//Начинаем сбор фруктов.
-foreach ($garden->getTree() as $tree_obj => $value) {
-  //получаем общее количество фруктов одного вида
-  $overcount = $garden->getFruit()[$tree_obj][0]*$garden->getTree()[$tree_obj];
-  //получаем общий вес собранных фруктов одного вида в гр
-  $all_weight = $garden->getFruit()[$tree_obj][1]*$overcount;
-  //аннулируем количество фруктов с собранных деревьев
-  $garden->countFruit($tree_obj, array(0, $garden->getFruit()[$tree_obj][1]));
-  //выводим информацию о сборе
-  echo "(".$tree_obj.") Количество плодов:".$overcount.". Общий вес:". $all_weight ."гр или ".($all_weight/1000)."кг\n";
+//Создаем дерево, 10 и 15шт. Передаем 2 массива. в одном количество яблок, а в другом их вес в гр
+$garden->newTree("Яблоня", 10,  array(40, 50), array(150, 180));
+$garden->newTree("Груша", 15, array(0, 20), array(130, 170));
+#получаем массив с видами деревьев
+foreach ($garden->getTree() as $key => $value){
+  #массив для яблок
+  $fruitcount = array();
+  #массив для веса яблок
+  $fruitgrcount = array();
+  #проходимся по деревьям, собирая яблоки и их вес
+  foreach ($value as $key2 => $value2) {
+    $fruitcount[] = count($value2);
+    foreach ($value2 as $key3 => $value3) {
+      $fruitgrcount[] = $value3;
+    }
+  }
+  echo "(".$key.") Количество плодов: ".array_sum($fruitcount)." Общий вес: ".array_sum($fruitgrcount)."гр или ".(array_sum($fruitgrcount)/1000)."кг\n";
 }
-echo "Конец сбора\n------------------\nПосле сбора:\n";
-print_r($garden->getTree());
-print_r($garden->getFruit());
-?>
