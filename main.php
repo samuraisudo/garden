@@ -18,8 +18,9 @@ class Garden
     #создаем уникальное дерево
     for ($ii=0; $ii < $tree_id; $ii++) {
       #создаем уникальное яблоко которое имеет свои параметры
-      for ($i=0; $i < rand($count[0], $count[1]); $i++) {
-        $inf[$i] = rand($weight[0], $weight[1]);
+      for ($i=0; $i < mt_rand(intval($count[0]), intval($count[1])); $i++) {
+
+        $inf[$i] = mt_rand(intval($weight[0]), intval($weight[1]));
       }
       $this->tree[$tree_name][$ii] = $inf;
     }
@@ -30,7 +31,7 @@ $garden = new Garden();
 //Создаем дерево, 10 и 15шт. Передаем 2 массива. в одном количество яблок, а в другом их вес в гр
 $garden->newTree("Яблоня", 10,  array(40, 50), array(150, 180));
 $garden->newTree("Груша", 15, array(0, 20), array(130, 170));
-#получаем массив с видами деревьев
+#получаем массив с видами деревьев и проходимся по ним
 foreach ($garden->getTree() as $key => $value){
   #массив для яблок
   $fruitcount = array();
